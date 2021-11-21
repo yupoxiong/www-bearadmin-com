@@ -1,2 +1,2 @@
 # www-bearadmin-com
-BearAdmin网站
+基于BearAdmin开发的BearAdmin官网管理系统
