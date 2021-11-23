@@ -34,7 +34,7 @@
         "ext-curl": "*"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master",
+        "roave/security-advisories": "dev-latest",
         "symfony/var-dumper": "^4.2",
         "topthink/think-trace": "^1.0"
     },

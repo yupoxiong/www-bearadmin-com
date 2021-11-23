@@ -13,6 +13,9 @@ use Exception;
 class IndexController extends IndexBaseController
 {
 
+    protected array $loginExcept= [
+        'index/index/index'
+    ];
     /**
      * @throws Exception
      */
