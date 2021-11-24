@@ -298,5 +298,11 @@ class SettingController extends AdminBaseController
         return $this->show(1);
     }
 
+    public function home()
+    {
+        return $this->show(2);
+    }
+
+
 }//append_menu
 //请勿删除上面的注释，上面注释为自动追加菜单方法标记

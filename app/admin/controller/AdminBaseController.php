@@ -9,6 +9,7 @@ declare (strict_types=1);
 namespace app\admin\controller;
 
 use Exception;
+use think\facade\Log;
 use think\View;
 use think\facade\Env;
 use think\response\Json;

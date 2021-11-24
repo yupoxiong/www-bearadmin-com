@@ -97,12 +97,11 @@ trait AdminAuthTrait
         $action_list  = setting('admin.safe.check_token_action_list') ?? $default_list;
         $action_list  = explode(',', $action_list);
         $is_check     = (bool)setting('admin.safe.check_token');
-
         if ($is_check && request()->isPost() && in_array(request()->action(true), $action_list, true)) {
             // 如果当前访问方式为post，并且当前访问的控制器action在配置的列表中，验证csrfToken
             $check = request()->checkToken();
             if (false === $check) {
-                throw new HttpResponseException(admin_error('token验证失败', [], URL_CURRENT, 403));
+                throw new HttpResponseException(admin_error('token验证失败'));
             }
         }
     }

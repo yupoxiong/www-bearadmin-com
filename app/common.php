@@ -1,100 +1,120 @@
 <?php
 // 应用公共文件
 
-
 use think\facade\Config;
+use think\db\exception\DbException;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 
 if (!function_exists('setting')) {
     /**
      * 设置相关助手函数
-     * @param string|array $name
-     * @param null $value
-     * @return array|bool|mixed|null
+     * @return mixed
      */
-    function setting($name = '', $value = null)
+    function setting($name = '', $default = null)
     {
-        if ($value === null && is_string($name)) {
-            //获取一级配置
-            if ('.' === substr($name, -1)) {
-                $result = Config::get(substr($name, 0, -1));
-                if (count($result) === 0) {
-                    //如果文件不存在，查找数据库
-                    $result = get_database_setting(substr($name, 0, -1));
-                }
-
-                return $result;
-            }
-            //判断配置是否存在或读取配置
-            if (0 === strpos($name, '?')) {
-                $result = Config::has(substr($name, 1));
-                if (!$result) {
-                    //如果配置不存在，查找数据库
-                    if ($name && false === strpos($name, '.')) {
-                        return [];
-                    }
-
-                    if ('.' === substr($name, -1)) {
-
-                        return get_database_setting(substr($name, 0, -1));
-                    }
-
-                    $name_arr    = explode('.', $name);
-                    $name_arr[0] = strtolower($name_arr[0]);
-
-                    $result = get_database_setting($name_arr[0]);
-                    if ($result) {
-                        $config = $result;
-                        // 按.拆分成多维数组进行判断
-                        foreach ($name_arr as $val) {
-                            if (isset($config[$val])) {
-                                $config = $config[$val];
-                            } else {
-                                return null;
-                            }
-                        }
-
-                        return $config;
-
-                    }
-                    return $result;
-                }
-
-                return true;
-            }
-
-            $result = Config::get($name);
-            if (!$result) {
-                $result = get_database_setting($name);
-            }
-            return $result;
+        if (Config::has($name)) {
+            return Config::get($name);
         }
-        return Config::set($name, $value);
+        return get_database_setting($name, $default);
     }
-
 }
 
 if (!function_exists('get_database_setting')) {
     /**
      * 获取数据库配置
-     * @param $name
-     * @return array
+     * @param string $name
+     * @param mixed $default
+     * @return array|mixed|null
      */
-    function get_database_setting($name): array
+    function get_database_setting(string $name = '', $default = null)
     {
-        $result = [];
-        $group  = (new app\common\model\SettingGroup)->where('code', $name)->findOrEmpty();
-        if (!$group->isEmpty()) {
+        if (empty($name)) {
+            // 获取所有的setting
+            try {
+                $all = (new app\common\model\SettingGroup)->select();
+                if ($all->isEmpty()) {
+                    return $default;
+                }
+                $result = [];
+                foreach ($all as $item) {
+                    foreach ($item->setting as $setting) {
+                        $key_setting = [];
+                        foreach ($setting->content as $content) {
+                            $key_setting[$content['field']] = $content['content'];
+                        }
+                        $result[$setting->code] = $key_setting;
+                    }
+                }
+                return $result;
+            } catch (DataNotFoundException | ModelNotFoundException | DbException $e) {
+                return $default;
+            }
+        }
+
+        $name_arr = explode('.', $name);
+
+        $group = (new app\common\model\SettingGroup)
+            ->where('code', '=', $name_arr[0])
+            ->findOrEmpty();
+        if ($group->isEmpty()) {
+            return $default;
+        }
+        $name_count = count($name_arr);
+        if ($name_count === 1) {
             $result = [];
-            foreach ($group->setting as $key => $setting) {
+            // 获取分组下所有的
+            foreach ($group->setting as $setting) {
                 $key_setting = [];
                 foreach ($setting->content as $content) {
                     $key_setting[$content['field']] = $content['content'];
                 }
                 $result[$setting->code] = $key_setting;
             }
+            if (empty($result)) {
+                return $default;
+            }
+            return $result;
         }
 
-        return $result;
+        if ($name_count === 2) {
+            $result = [];
+            if (empty($name_arr[1])) {
+                foreach ($group->setting as $setting) {
+                    $key_setting = [];
+                    foreach ($setting->content as $content) {
+                        $key_setting[$content['field']] = $content['content'];
+                    }
+                    $result[$setting->code] = $key_setting;
+                }
+            } else {
+                $setting = (new app\common\model\Setting)->where('code', '=', $name_arr[1])->findOrEmpty();
+                if ($setting->isEmpty()) {
+                    return $default;
+                }
+                foreach ($setting->content as $content) {
+                    $result[$content['field']] = $content['content'];
+                }
+            }
+            if (empty($result)) {
+                return $default;
+            }
+            return $result;
+        }
+
+        if ($name_count === 3) {
+            $setting = (new app\common\model\Setting)->where('code', '=', $name_arr[1])->findOrEmpty();
+            if ($setting->isEmpty()) {
+                return $default;
+            }
+            foreach ($setting->content as $content) {
+                if ($content['field'] === $name_arr[2]) {
+                    return $content['content'];
+                }
+            }
+            return $default;
+        }
+        return $default;
     }
 }
 

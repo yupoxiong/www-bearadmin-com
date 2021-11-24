@@ -25,6 +25,9 @@ class TestController extends ApiBaseController
      */
     public function index(TestService $service)
     {
+        $a = '233223';
+        dump(explode('.',$a));
+
         $a = SafeCookie::encrypt('123456','1234');
         dump($a);
         $b = SafeCookie::decrypt($a,'1234');
