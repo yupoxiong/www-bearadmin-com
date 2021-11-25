@@ -14,7 +14,8 @@ class IndexController extends IndexBaseController
 {
 
     protected array $loginExcept= [
-        'index/index/index'
+        'index/index/index',
+        'index/index/about',
     ];
     /**
      * @throws Exception

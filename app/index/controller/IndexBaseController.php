@@ -65,7 +65,6 @@ class IndexBaseController
 
         $login_except = !empty($this->loginExcept) ? array_map('parse_name', $this->loginExcept) : $this->loginExcept;
 
-
         if (!in_array($url, $login_except, true) && !$this->isLogin()) {
             throw new HttpResponseException(index_error('未登录', 'auth/login'));
         }
@@ -93,6 +92,8 @@ class IndexBaseController
      */
     protected function fetch(string $template = '', array $vars = []): string
     {
+        $this->index['website'] = setting('home.website');
+
         $this->assign([
             'index' => $this->index,
         ]);

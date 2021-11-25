@@ -75,15 +75,12 @@ class SettingController extends AdminBaseController
 
             $result = $model::create($param);
 
-            $url = URL_BACK;
-            if (isset($param['_create']) && ((int)$param['_create']) === 1) {
-                $url = URL_RELOAD;
-            }
-
             $group = (new SettingGroup)->find($result->setting_group_id);
             create_setting_file($group);
 
-            return $result ? admin_success('添加成功', $url) : admin_error();
+            $redirect = isset($param['_create']) && (int)$param['_create'] === 1 ? URL_RELOAD : URL_BACK;
+
+            return $result ? admin_success('添加成功', [], $redirect) : admin_error('添加失败');
         }
 
         $this->assign([
@@ -125,7 +122,7 @@ class SettingController extends AdminBaseController
             $group = (new SettingGroup())->findOrEmpty($data->setting_group_id);
             create_setting_file($group);
 
-            return $result ? admin_success() : admin_error();
+            return $result ? admin_success('修改成功', [], URL_BACK) : admin_error('修改失败');
         }
 
         $this->assign([
@@ -226,8 +223,8 @@ class SettingController extends AdminBaseController
      */
     public function update(Request $request, Setting $model): Json
     {
-        $param = $request->param();
-        $id = $param['id'];
+        $param  = $request->param();
+        $id     = $param['id'];
         $config = $model->findOrEmpty($id);
 
         $content_data = [];

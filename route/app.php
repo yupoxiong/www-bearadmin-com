@@ -9,3 +9,5 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 use think\facade\Route;
+
+//Route::get('about','\app\index\controller\IndexController/about');
