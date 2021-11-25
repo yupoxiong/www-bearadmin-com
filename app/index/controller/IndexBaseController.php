@@ -10,9 +10,13 @@ declare (strict_types=1);
 namespace app\index\controller;
 
 
+use app\common\model\Nav;
 use app\common\model\User;
 use app\index\traits\IndexAuthTrait;
 use Exception;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\exception\HttpResponseException;
 use think\View;
 
@@ -45,7 +49,7 @@ class IndexBaseController
      * @var array
      */
 
-    protected array $index=[];
+    protected array $index = [];
 
     protected array $loginExcept = [];
 
@@ -69,7 +73,7 @@ class IndexBaseController
             throw new HttpResponseException(index_error('未登录', 'auth/login'));
         }
 
-        if(isset($this->user)){
+        if (isset($this->user)) {
             $this->index['user'] = $this->user;
         }
 
@@ -93,6 +97,7 @@ class IndexBaseController
     protected function fetch(string $template = '', array $vars = []): string
     {
         $this->index['website'] = setting('home.website');
+        $this->index['nav']     = $this->getNav();
 
         $this->assign([
             'index' => $this->index,
@@ -112,5 +117,13 @@ class IndexBaseController
         return $this->view->assign($name, $value);
     }
 
+    protected function getNav()
+    {
+        try {
+            return (new Nav)->where('status', '=', 1)->order('sort_number', 'asc')->order('id', 'asc')->select();
+        } catch (DataNotFoundException | ModelNotFoundException | DbException $e) {
+            return [];
+        }
+    }
 
 }

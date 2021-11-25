@@ -5,8 +5,39 @@
 {block name='content'}
 
 <section class="content">
+    <div class="row">
+    <!-- /.col -->
+    <div class="col-md-12">
+                <div id="indexSlide" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        {foreach $slide_list as $key=>$slide}
+                        <li data-target="#indexSlide" data-slide-to="{$key}" {if $key==0}class="active"{/if}></li>
+                        {/foreach}
+                    </ol>
+                    <div class="carousel-inner">
 
-    开发中，敬请期待
+                        {foreach $slide_list as $key=>$slide}
+                        <div class="carousel-item {if $key==0}active{/if}">
+                            <img class="d-block w-100" src="{$slide.img}" alt="{$slide.name}">
+                        </div>
+                        {/foreach}
+                    </div>
+                    <a class="carousel-control-prev" href="#indexSlide" role="button" data-slide="prev">
+                    <span class="carousel-control-custom-icon" aria-hidden="true">
+                      <i class="fas fa-chevron-left"></i>
+                    </span>
+                        <span class="sr-only">上一张</span>
+                    </a>
+                    <a class="carousel-control-next" href="#indexSlide" role="button" data-slide="next">
+                    <span class="carousel-control-custom-icon" aria-hidden="true">
+                      <i class="fas fa-chevron-right"></i>
+                    </span>
+                        <span class="sr-only">下一张</span>
+                    </a>
+                </div>
+    </div>
+    </div>
+    <!-- /.col -->
 </section>
 
 {/block}

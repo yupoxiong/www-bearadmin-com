@@ -8,23 +8,35 @@ declare (strict_types=1);
 
 namespace app\index\controller;
 
+use app\common\model\Slide;
 use Exception;
 
 class IndexController extends IndexBaseController
 {
 
-    protected array $loginExcept= [
+    protected array $loginExcept = [
         'index/index/index',
         'index/index/about',
     ];
+
     /**
      * @throws Exception
      */
-    public function index(): string
+    public function index(Slide $slide): string
     {
-        $this->index['name'] = '演示首页';
+
+        $slide_list = $slide->where('status', '=', 1)
+            ->order('sort_number', 'asc')
+            ->order('id', 'asc')
+            ->select();
+
+        $this->assign([
+            'slide_list' => $slide_list,
+        ]);
+
+        $this->index['name']  = '演示首页';
         $this->index['title'] = '首页演示，自定义即可';
-        return  $this->fetch();
+        return $this->fetch();
     }
 
     /**
@@ -32,10 +44,10 @@ class IndexController extends IndexBaseController
      */
     public function product(): string
     {
-        $this->index['name'] = '演示产品';
+        $this->index['name']  = '演示产品';
         $this->index['title'] = '这是产品的演示页面，啊啊啊啊啊，这个地方可以用富文本，自己合理安排就行。。';
 
-        return  $this->fetch();
+        return $this->fetch();
     }
 
     /**
@@ -43,9 +55,9 @@ class IndexController extends IndexBaseController
      */
     public function about(): string
     {
-        $this->index['name'] = '演示关于';
-        $this->index['title'] =  '这是关于我们的演示页面，啊啊啊啊啊，这个地方可以用富文本，自己合理安排就行。。';
+        $this->index['name']  = '演示关于';
+        $this->index['title'] = '这是关于我们的演示页面，啊啊啊啊啊，这个地方可以用富文本，自己合理安排就行。。';
 
-        return  $this->fetch();
+        return $this->fetch();
     }
 }

@@ -11,9 +11,11 @@
 
         <div class="collapse navbar-collapse order-3" id="navbarCollapse">
             <ul class="navbar-nav">
+                {foreach $index.nav as $nav}
                 <li class="nav-item">
-                    <a href="{:url('index/index')}" class="nav-link">首页</a>
+                    <a href="{:url($nav.url)}" class="nav-link">{$nav.name|default='--'}</a>
                 </li>
+                {/foreach}
             </ul>
         </div>
     </div>
