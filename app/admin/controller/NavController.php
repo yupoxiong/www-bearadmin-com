@@ -56,7 +56,7 @@ class NavController extends AdminBaseController
     {
         if ($request->isPost()) {
             $param           = $request->param();
-            $validate_result = $validate->scene('add')->check($param);
+            $validate_result = $validate->scene('admin_add')->check($param);
             if (!$validate_result) {
                 return admin_error($validate->getError());
             }

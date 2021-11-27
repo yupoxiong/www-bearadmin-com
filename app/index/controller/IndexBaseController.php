@@ -103,6 +103,10 @@ class IndexBaseController
             'index' => $this->index,
         ]);
 
+        if((int)$this->index['website']['site_status']===0){
+            $template = 'status/status0';
+        }
+
         return $this->view->fetch($template, $vars);
     }
 

@@ -1,32 +1,34 @@
 <?php
 /**
- * 用户等级控制器
+ * 文章控制器
  */
 
 namespace app\admin\controller;
 
 use Exception;
-use think\db\Query;
 use think\Request;
+use think\db\Query;
 use think\response\Json;
-use app\common\model\UserLevel;
+use app\common\model\Article;
+use app\common\model\Category;
+use app\common\model\Author;
 
-use app\common\validate\UserLevelValidate;
+use app\common\validate\ArticleValidate;
 
-class UserLevelController extends AdminBaseController
+class ArticleController extends AdminBaseController
 {
 
     /**
      * 列表
      * @param Request $request
-     * @param UserLevel $model
+     * @param Article $model
      * @return string
      * @throws Exception
      */
-    public function index(Request $request, UserLevel $model): string
+    public function index(Request $request, Article $model): string
     {
         $param = $request->param();
-        $data  = $model->scope('where', $param)
+        $data  = $model->with(['category','author',])->scope('where', $param)
             ->paginate([
                 'list_rows' => $this->admin['admin_list_rows'],
                 'var_page'  => 'page',
@@ -46,14 +48,13 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 添加
-     *
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Article $model
+     * @param ArticleValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function add(Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function add(Request $request, Article $model, ArticleValidate $validate)
     {
         if ($request->isPost()) {
             $param           = $request->param();
@@ -61,7 +62,9 @@ class UserLevelController extends AdminBaseController
             if (!$validate_result) {
                 return admin_error($validate->getError());
             }
-            
+            $param['content'] = $request->param(false)['content'];
+
+
             $result = $model::create($param);
 
             $url = URL_BACK;
@@ -70,21 +73,25 @@ class UserLevelController extends AdminBaseController
             }
             return $result ? admin_success('添加成功', [], $url) : admin_error();
         }
-        
+        $this->assign([
+    'category_list' => Category::select(),
+'author_list' => Author::select(),
+
+]);
+
         return $this->fetch();
     }
 
     /**
      * 修改
-     *
      * @param $id
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Article $model
+     * @param ArticleValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function edit($id, Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function edit($id, Request $request, Article $model, ArticleValidate $validate)
     {
         $data = $model->findOrEmpty($id);
         if ($request->isPost()) {
@@ -93,7 +100,9 @@ class UserLevelController extends AdminBaseController
             if (!$check) {
                 return admin_error($validate->getError());
             }
-            
+            $param['content'] = $request->param(false)['content'];
+
+
             $result = $data->save($param);
 
             return $result ? admin_success('修改成功', [], URL_BACK) : admin_error('修改失败');
@@ -101,7 +110,9 @@ class UserLevelController extends AdminBaseController
 
         $this->assign([
             'data' => $data,
-            
+            'category_list' => Category::select(),
+'author_list' => Author::select(),
+
         ]);
 
         return $this->fetch('add');
@@ -109,12 +120,11 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 删除
-     *
      * @param mixed $id
-     * @param UserLevel $model
+     * @param Article $model
      * @return Json
      */
-    public function del($id, UserLevel $model): Json
+    public function del($id, Article $model): Json
     {
         $check = $model->inNoDeletionIds($id);
         if (false !== $check) {

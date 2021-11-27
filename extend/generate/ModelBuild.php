@@ -20,7 +20,7 @@ class ModelBuild extends Build
         $this->config = $config;
 
         $this->template = $this->config['template']['model'];
-        $this->code = file_get_contents($this->template['model']);
+        $this->code     = file_get_contents($this->template['model']);
     }
 
     /**
@@ -51,14 +51,14 @@ class ModelBuild extends Build
             if ($value['relation_type'] > 0) {
                 $relation_code .= $this->getRelationCode($value);
             } else {
-                if ($value['form_type'] === 'select' || $value['index_search']==='select') {
+                if ($value['form_type'] === 'select' || $value['index_search'] === 'select') {
                     $code_result        = $this->getSelectCode($value);
                     $select_data_code   .= $code_result[0];
                     $getter_setter_code .= $code_result[1];
                 }
             }
             if ($value['getter_setter']) {
-                $this->getGetterSetterCode($value);
+                $getter_setter_code .= $this->getGetterSetterCode($value);
             }
         }
 

@@ -1,29 +1,29 @@
 <?php
 /**
- * 用户等级控制器
+ * 标签控制器
  */
 
 namespace app\admin\controller;
 
 use Exception;
-use think\db\Query;
 use think\Request;
+use think\db\Query;
 use think\response\Json;
-use app\common\model\UserLevel;
+use app\common\model\Tag;
 
-use app\common\validate\UserLevelValidate;
+use app\common\validate\TagValidate;
 
-class UserLevelController extends AdminBaseController
+class TagController extends AdminBaseController
 {
 
     /**
      * 列表
      * @param Request $request
-     * @param UserLevel $model
+     * @param Tag $model
      * @return string
      * @throws Exception
      */
-    public function index(Request $request, UserLevel $model): string
+    public function index(Request $request, Tag $model): string
     {
         $param = $request->param();
         $data  = $model->scope('where', $param)
@@ -46,14 +46,13 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 添加
-     *
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Tag $model
+     * @param TagValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function add(Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function add(Request $request, Tag $model, TagValidate $validate)
     {
         if ($request->isPost()) {
             $param           = $request->param();
@@ -76,15 +75,14 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 修改
-     *
      * @param $id
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Tag $model
+     * @param TagValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function edit($id, Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function edit($id, Request $request, Tag $model, TagValidate $validate)
     {
         $data = $model->findOrEmpty($id);
         if ($request->isPost()) {
@@ -109,12 +107,11 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 删除
-     *
      * @param mixed $id
-     * @param UserLevel $model
+     * @param Tag $model
      * @return Json
      */
-    public function del($id, UserLevel $model): Json
+    public function del($id, Tag $model): Json
     {
         $check = $model->inNoDeletionIds($id);
         if (false !== $check) {

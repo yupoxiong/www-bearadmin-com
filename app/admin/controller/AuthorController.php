@@ -1,29 +1,29 @@
 <?php
 /**
- * 用户等级控制器
+ * 作者控制器
  */
 
 namespace app\admin\controller;
 
 use Exception;
-use think\db\Query;
 use think\Request;
+use think\db\Query;
 use think\response\Json;
-use app\common\model\UserLevel;
+use app\common\model\Author;
 
-use app\common\validate\UserLevelValidate;
+use app\common\validate\AuthorValidate;
 
-class UserLevelController extends AdminBaseController
+class AuthorController extends AdminBaseController
 {
 
     /**
      * 列表
      * @param Request $request
-     * @param UserLevel $model
+     * @param Author $model
      * @return string
      * @throws Exception
      */
-    public function index(Request $request, UserLevel $model): string
+    public function index(Request $request, Author $model): string
     {
         $param = $request->param();
         $data  = $model->scope('where', $param)
@@ -46,14 +46,13 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 添加
-     *
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Author $model
+     * @param AuthorValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function add(Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function add(Request $request, Author $model, AuthorValidate $validate)
     {
         if ($request->isPost()) {
             $param           = $request->param();
@@ -76,15 +75,14 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 修改
-     *
      * @param $id
      * @param Request $request
-     * @param UserLevel $model
-     * @param UserLevelValidate $validate
+     * @param Author $model
+     * @param AuthorValidate $validate
      * @return string|Json
      * @throws Exception
      */
-    public function edit($id, Request $request, UserLevel $model, UserLevelValidate $validate)
+    public function edit($id, Request $request, Author $model, AuthorValidate $validate)
     {
         $data = $model->findOrEmpty($id);
         if ($request->isPost()) {
@@ -109,12 +107,11 @@ class UserLevelController extends AdminBaseController
 
     /**
      * 删除
-     *
      * @param mixed $id
-     * @param UserLevel $model
+     * @param Author $model
      * @return Json
      */
-    public function del($id, UserLevel $model): Json
+    public function del($id, Author $model): Json
     {
         $check = $model->inNoDeletionIds($id);
         if (false !== $check) {
